@@ -1,0 +1,14 @@
+services:
+  database-mcp:
+    build: .
+    container_name: database-mcp
+    # databases.yaml 只读挂载，方便在宿主机上修改配置后重启生效
+    volumes:
+      - ./databases.yaml:/app/databases.yaml:ro
+    # 从 .env 文件加载数据库密码等敏感环境变量
+    env_file:
+      - .env
+    # stdio 模式需要保持标准输入打开
+    stdin_open: true
+    tty: true
+    restart: unless-stopped

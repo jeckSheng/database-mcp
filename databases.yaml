@@ -1,0 +1,40 @@
+databases:
+  # 只读 MySQL 连接（生产环境）
+  prod_mysql:
+    type: mysql
+    host: "${MYSQL_PROD_HOST}"
+    port: "${MYSQL_PROD_PORT}"
+    database: "${MYSQL_PROD_DATABASE}"
+    user: "${MYSQL_PROD_USER}"
+    password: "${MYSQL_PROD_PASSWORD}"
+    permissions:
+      allow_read: "${MYSQL_PROD_ALLOW_READ}"
+      allow_write: "${MYSQL_PROD_ALLOW_WRITE}"
+      allow_ddl: "${MYSQL_PROD_ALLOW_DDL}"
+
+  # 开发环境 MySQL（完全权限）
+  dev_mysql:
+    type: mysql
+    host: "${MYSQL_TEST_HOST}"
+    port: "${MYSQL_TEST_PORT}"
+    database: "${MYSQL_TEST_DATABASE}"
+    user: "${MYSQL_TEST_USER}"
+    password: "${MYSQL_TEST_PASSWORD}"
+    permissions:
+      allow_read: "${MYSQL_TEST_ALLOW_READ}"
+      allow_write: "${MYSQL_TEST_ALLOW_WRITE}"
+      allow_ddl: "${MYSQL_TEST_ALLOW_DDL}"
+
+  # 读写 PostgreSQL 连接（分析库）
+  # analytics_pg:
+  #   type: postgresql
+  #   host: 192.168.1.20
+  #   port: 5432
+  #   database: analytics
+  #   user: analyst
+  #   password: "${PG_ANALYTICS_PASSWORD}"
+  #   permissions:
+  #     allow_read: true
+  #     allow_write: true
+  #     allow_ddl: false
+

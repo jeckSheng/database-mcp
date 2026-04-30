@@ -1,0 +1,17 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+.env
+*.log
+docs/*
+CLAUDE.md
+
+/.idea
+/.vscode
+/node_modules
+/.idea
+/.vagrant
+/.DS_Store
+.DS_Store
