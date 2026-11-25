@@ -73,7 +73,7 @@ docker-compose up -d
 ### 4. 注册到 Claude Code
 
 ```bash
-claude mcp add database -- docker exec -i database-mcp python -m database_mcp
+claude mcp add database  --scope user  -- docker exec -i database-mcp python -m database_mcp
 ```
 
 验证注册成功：
