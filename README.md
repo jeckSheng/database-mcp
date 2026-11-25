@@ -7,8 +7,8 @@
 | MCP 工具 | 说明 | 权限要求 |
 |----------|------|----------|
 | `list_connections` | 列出所有数据库连接及权限 | 无 |
-| `execute_query` | 执行 SELECT 查询（最多 1000 行） | `allow_read` |
-| `execute_write` | 执行 INSERT / UPDATE / DELETE | `allow_write` |
+| `execute_query` | 执行单条只读 SELECT（最多 1000 行） | `allow_read` |
+| `execute_write` | 执行单条 INSERT / UPDATE / DELETE | `allow_write` |
 | `execute_ddl` | 执行 CREATE / ALTER / DROP 等 DDL | `allow_ddl` |
 | `list_tables` | 列出数据库所有表 | `allow_read` |
 | `describe_table` | 查看表结构 | `allow_read` |
@@ -18,7 +18,7 @@
 ### 1. 配置数据库连接
 
 ```bash
-cp databases.yaml.example databases.yaml  # 或直接编辑 databases.yaml
+cp databases.example.yaml databases.yaml  # databases.yaml 是本地配置，不提交 git
 ```
 
 编辑 `databases.yaml`，填入你的数据库信息：
@@ -96,10 +96,20 @@ claude mcp list
 | `allow_ddl` | `false` | 允许 CREATE / ALTER / DROP / TRUNCATE |
 
 安全机制：
-- `execute_query` 只接受 SELECT，传入其他语句直接报错
-- `execute_write` 禁止 DROP / TRUNCATE（必须走 `execute_ddl`）
+- SQL 经 sqlglot 按方言解析，每次只允许一条语句，语句类型须与工具匹配，无法解析的直接拒绝；MySQL 禁用 `/*! */` 可执行注释和 `/*+ */` 优化器提示
+- `execute_query` 在只读事务中执行，拒绝 `SELECT ... INTO`、PG 数据修改 CTE 等写操作
+- `execute_write` 拒绝不带 WHERE 的 UPDATE / DELETE 和 WITH 中的写操作；在事务中执行，影响行数超过上限即回滚
 - 表名做标识符校验，防止 SQL 注入
-- 查询结果默认最多返回 1000 行（可在配置中调整 `max_rows`）
+
+> 以上是防误操作，不是安全边界。`GET_LOCK()`、`dblink_exec()` 这类函数的副作用不受只读事务限制，只读连接请使用只读数据库账号，真正的权限隔离靠数据库授权。
+
+可选限制（每个连接单独配置）：
+
+| 字段 | 默认值 | 说明 |
+|------|--------|------|
+| `max_rows` | `1000` | 查询最多返回行数 |
+| `max_affected_rows` | `1000` | 单条写操作影响行数上限，超过则回滚（MyISAM 等非事务表无法回滚） |
+| `statement_timeout` | `30` | 语句超时秒数，`0` 为不限制。PG 作用于查询和写操作；MySQL 仅作用于查询，服务端不支持时自动跳过；均不限制 DDL |
 
 ### 环境变量占位符
 
@@ -113,7 +123,8 @@ password: "${MY_DB_PASSWORD}"
 
 ```
 database-mcp/
-├── databases.yaml          # 数据库连接配置
+├── databases.yaml          # 数据库连接配置（不提交 git）
+├── databases.example.yaml  # 连接配置模板
 ├── .env                    # 密码环境变量（不提交 git）
 ├── .env.example            # 环境变量模板
 ├── Dockerfile

@@ -31,6 +31,8 @@ class DatabaseConfig(BaseModel):
     password: str
     permissions: Permissions
     max_rows: int = 1000
+    max_affected_rows: int = 1000  # 单条 DML 影响行数上限，超过则回滚
+    statement_timeout: int = 30  # 秒；PG 作用于查询和写，MySQL 仅作用于查询，均不含 DDL
 
     @field_validator("type")
     @classmethod

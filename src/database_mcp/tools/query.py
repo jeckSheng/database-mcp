@@ -17,7 +17,7 @@ async def execute_write(router: Router, connection: str, sql: str) -> str:
     config = router.get_config(connection)
     check_write_permission(config, sql)
     pool = router.get_pool(connection)
-    return await pool.execute(sql)
+    return await pool.execute(sql, max_affected_rows=config.max_affected_rows)
 
 
 async def execute_ddl(router: Router, connection: str, sql: str) -> str:

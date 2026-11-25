@@ -11,6 +11,10 @@ databases:
       allow_read: "${MYSQL_PROD_ALLOW_READ}"
       allow_write: "${MYSQL_PROD_ALLOW_WRITE}"
       allow_ddl: "${MYSQL_PROD_ALLOW_DDL}"
+    # 可选，以下为默认值
+    # max_rows: 1000            # 查询最多返回行数
+    # max_affected_rows: 1000   # 单条写操作影响行数上限，超过则回滚
+    # statement_timeout: 30     # 语句超时（秒），0 为不限制
 
   # 开发环境 MySQL（完全权限）
   dev_mysql:

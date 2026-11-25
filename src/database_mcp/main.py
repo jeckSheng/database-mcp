@@ -27,7 +27,7 @@ async def list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="execute_query",
-            description="在指定连接上执行 SELECT 查询，最多返回 1000 行",
+            description="在指定连接上执行单条只读 SELECT 查询（只读事务），最多返回 max_rows 行，超时 statement_timeout 秒",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -45,7 +45,7 @@ async def list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="execute_write",
-            description="在指定连接上执行 INSERT / UPDATE / DELETE 操作",
+            description="在指定连接上执行单条 INSERT / UPDATE / DELETE。UPDATE/DELETE 必须带 WHERE；影响行数超过 max_affected_rows 会自动回滚并报错，需缩小范围或分批执行",
             inputSchema={
                 "type": "object",
                 "properties": {
@@ -60,7 +60,7 @@ async def list_tools() -> list[types.Tool]:
         ),
         types.Tool(
             name="execute_ddl",
-            description="在指定连接上执行 DDL 语句（CREATE / ALTER / DROP / TRUNCATE）",
+            description="在指定连接上执行单条 DDL 语句（CREATE / ALTER / DROP / TRUNCATE）",
             inputSchema={
                 "type": "object",
                 "properties": {

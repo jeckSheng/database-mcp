@@ -72,7 +72,9 @@ async def test_execute_write_calls_execute_with_sql():
     router, mock_pool = make_router(allow_write=True)
     mock_pool.execute = AsyncMock(return_value="1 row(s) affected")
     await execute_write(router, "testdb", "UPDATE users SET name='Bob' WHERE id=1")
-    mock_pool.execute.assert_called_once_with("UPDATE users SET name='Bob' WHERE id=1")
+    mock_pool.execute.assert_called_once_with(
+        "UPDATE users SET name='Bob' WHERE id=1", max_affected_rows=1000
+    )
 
 
 async def test_execute_write_rejects_drop():

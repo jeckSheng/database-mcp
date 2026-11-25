@@ -117,6 +117,8 @@ databases:
     assert db.permissions.allow_write is False
     assert db.permissions.allow_ddl is False
     assert db.max_rows == 1000
+    assert db.max_affected_rows == 1000
+    assert db.statement_timeout == 30
 
 
 def test_load_multiple_databases(tmp_path):
